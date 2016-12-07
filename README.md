@@ -1,4 +1,4 @@
-# VehicleTrackingSample-ForMvc
+# Vehicle Tracking Sample Template for Mvc
 
 ### Description
 
