@@ -212,13 +212,7 @@ namespace MapSuiteVehicleTracking.Controllers
             Collection<Feature> spatialFencesWithin = spatialFenceLayer.QueryTools.GetFeaturesContaining(pointShape, ReturningColumnsType.NoColumns);
             spatialFenceLayer.Close();
 
-            bool isInFence = false;
-            if (spatialFencesWithin.Count > 0)
-            {
-                isInFence = true;
-            }
-
-            return isInFence;
+            return spatialFencesWithin.Count > 0;
         }
 
         private Dictionary<int, Vehicle> GetVehicles(Map Map1, DateTime currentTime)
@@ -269,19 +263,19 @@ namespace MapSuiteVehicleTracking.Controllers
             Map1.EditOverlay.EditSettings.IsResizable = false;
 
             // base map layer
-            WorldMapKitWmsWebOverlay worldMapKitRoadOverlay = new WorldMapKitWmsWebOverlay("World Map Kit Road");
-            worldMapKitRoadOverlay.Projection = ThinkGeo.MapSuite.Mvc.WorldMapKitProjection.SphericalMercator;
-            worldMapKitRoadOverlay.MapType = ThinkGeo.MapSuite.Mvc.WorldMapKitMapType.Road;
+            WorldStreetsAndImageryOverlay worldMapKitRoadOverlay = new WorldStreetsAndImageryOverlay("World Map Kit Road");
+            worldMapKitRoadOverlay.Projection = WorldStreetsAndImageryProjection.SphericalMercator;
+            worldMapKitRoadOverlay.MapType = WorldStreetsAndImageryMapType.Road;
             Map1.CustomOverlays.Add(worldMapKitRoadOverlay);
 
-            WorldMapKitWmsWebOverlay worldMapKitAerialOverlay = new WorldMapKitWmsWebOverlay("World Map Kit Aerial");
-            worldMapKitAerialOverlay.Projection = ThinkGeo.MapSuite.Mvc.WorldMapKitProjection.SphericalMercator;
-            worldMapKitAerialOverlay.MapType = ThinkGeo.MapSuite.Mvc.WorldMapKitMapType.Aerial;
+            WorldStreetsAndImageryOverlay worldMapKitAerialOverlay = new WorldStreetsAndImageryOverlay("World Map Kit Aerial");
+            worldMapKitAerialOverlay.Projection = WorldStreetsAndImageryProjection.SphericalMercator;
+            worldMapKitAerialOverlay.MapType = WorldStreetsAndImageryMapType.Aerial;
             Map1.CustomOverlays.Add(worldMapKitAerialOverlay);
 
-            WorldMapKitWmsWebOverlay worldMapKitAerialWithLabelsOverlay = new WorldMapKitWmsWebOverlay("World Map Kit Aerial With Labels");
-            worldMapKitAerialWithLabelsOverlay.Projection = ThinkGeo.MapSuite.Mvc.WorldMapKitProjection.SphericalMercator;
-            worldMapKitAerialWithLabelsOverlay.MapType = ThinkGeo.MapSuite.Mvc.WorldMapKitMapType.AerialWithLabels;
+            WorldStreetsAndImageryOverlay worldMapKitAerialWithLabelsOverlay = new WorldStreetsAndImageryOverlay("World Map Kit Aerial With Labels");
+            worldMapKitAerialWithLabelsOverlay.Projection = WorldStreetsAndImageryProjection.SphericalMercator;
+            worldMapKitAerialWithLabelsOverlay.MapType = WorldStreetsAndImageryMapType.AerialWithLabels;
             Map1.CustomOverlays.Add(worldMapKitAerialWithLabelsOverlay);
 
             OpenStreetMapOverlay openStreetMapOverlay = new OpenStreetMapOverlay("Open Street Map");
