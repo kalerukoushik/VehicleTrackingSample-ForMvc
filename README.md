@@ -1,4 +1,4 @@
-# Vehicle Tracking Sample Template for Mvc
+# Vehicle Tracking Sample for Mvc
 
 ### Description
 
@@ -11,7 +11,7 @@ Please refer to [Wiki](http://wiki.thinkgeo.com/wiki/map_suite_web_for_mvc) for 
 ### Requirements
 This sample makes use of the following NuGet Packages
 
-[MapSuite 10.0.0.0](https://www.nuget.org/packages?q=thinkgeo)
+[MapSuite 10.0.0](https://www.nuget.org/packages?q=ThinkGeo)
 
 ### About the Code
 
@@ -19,9 +19,9 @@ Working...
 
 ### Getting Help
 
-[Map Suite Mvc Wiki Resources](http://wiki.thinkgeo.com/wiki/map_suite_web_for_mvc)
+[Map Suite web for Mvc Wiki Resources](http://wiki.thinkgeo.com/wiki/map_suite_web_for_mvc)
 
-[Map Suite Mvc Product Description](https://thinkgeo.com/ui-controls#web-platforms)
+[Map Suite web for Mvc Product Description](https://thinkgeo.com/ui-controls#web-platforms)
 
 [ThinkGeo Community Site](http://community.thinkgeo.com/)
 
