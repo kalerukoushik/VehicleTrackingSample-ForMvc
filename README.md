@@ -15,7 +15,22 @@ This sample makes use of the following NuGet Packages
 
 ### About the Code
 
-Working...
+```csharp
+// Add the vehicle's latest position
+                Feature latestPositionFeature = new Feature(currentVehicle.Value.Location.GetLocationPointShape().GetWellKnownBinary(), currentVehicle.Value.VehicleName);
+                latestPositionFeature.ColumnValues["DateTime"] = currentVehicle.Value.Location.DateTime.ToString();
+                latestPositionFeature.ColumnValues["IsCurrentPosition"] = "IsCurrentPosition";
+                latestPositionFeature.ColumnValues["Speed"] = currentVehicle.Value.Location.Speed.ToString(CultureInfo.InvariantCulture);
+
+                Location projectedCurrentLocation = ProjectLocation(currentVehicle.Value.Location);
+                latestPositionFeature.ColumnValues["Longitude"] = projectedCurrentLocation.Longitude.ToString("N6", CultureInfo.InvariantCulture);
+                latestPositionFeature.ColumnValues["Latitude"] = projectedCurrentLocation.Latitude.ToString("N6", CultureInfo.InvariantCulture);
+                latestPositionFeature.ColumnValues["VehicleName"] = currentVehicle.Value.VehicleName;
+                latestPositionFeature.ColumnValues["Duration"] = currentVehicle.Value.SpeedDuration.ToString(CultureInfo.InvariantCulture);
+                vehiclesHistoryOverlay.FeatureSource.InternalFeatures.Add(latestPositionFeature);
+
+                vehiclesHistoryOverlay.FeatureSource.Close();
+```
 
 ### Getting Help
 
@@ -30,7 +45,9 @@ Working...
 ### Key APIs
 This example makes use of the following APIs:
 
-Working...
+- [ThinkGeo.MapSuite.Mvc.InMemoryMarkerOverlay](http://wiki.thinkgeo.com/wiki/api/thinkgeo.mapsuite.mvc.inmemorymarkeroverlay)
+- [ThinkGeo.MapSuite.Mvc.ValueMarkerStyle](http://wiki.thinkgeo.com/wiki/api/thinkgeo.mapsuite.mvc.valuemarkerstyle)
+- [ThinkGeo.MapSuite.Mvc.OpenStreetMapOverlay](http://wiki.thinkgeo.com/wiki/api/thinkgeo.mapsuite.mvc.openstreetmapoverlay)
 
 ### About Map Suite
 Map Suite is a set of powerful development components and services for the .Net Framework.
