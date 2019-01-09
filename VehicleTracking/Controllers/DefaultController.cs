@@ -255,6 +255,7 @@ namespace MapSuiteVehicleTracking.Controllers
         {
             Map Map1 = new Map("Map1");
             Map1.MapUnit = GeographyUnit.Meter;
+            Map1.ZoomLevelSet = ThinkGeoCloudMapsOverlay.GetZoomLevelSet();
             Map1.Width = new System.Web.UI.WebControls.Unit(100, System.Web.UI.WebControls.UnitType.Percentage);
             Map1.Height = new System.Web.UI.WebControls.Unit(100, System.Web.UI.WebControls.UnitType.Percentage);
             Map1.CurrentExtent = new RectangleShape(-10785241.6495495, 3916508.33762434, -10778744.5183967, 3912187.74540771);
@@ -263,22 +264,28 @@ namespace MapSuiteVehicleTracking.Controllers
             Map1.EditOverlay.EditSettings.IsResizable = false;
 
             // base map layer
-            WorldStreetsAndImageryOverlay worldMapKitRoadOverlay = new WorldStreetsAndImageryOverlay("World Map Kit Road");
-            worldMapKitRoadOverlay.Projection = WorldStreetsAndImageryProjection.SphericalMercator;
-            worldMapKitRoadOverlay.MapType = WorldStreetsAndImageryMapType.Road;
-            Map1.CustomOverlays.Add(worldMapKitRoadOverlay);
+            ThinkGeoCloudMapsOverlay ThinkGeoCloudMapsLight = new ThinkGeoCloudMapsOverlay
+            {
+                Name = "ThinkGeo Cloud Maps Light",
+                MapType = ThinkGeoCloudMapsMapType.Light
+            };
+            Map1.CustomOverlays.Add(ThinkGeoCloudMapsLight);
 
-            WorldStreetsAndImageryOverlay worldMapKitAerialOverlay = new WorldStreetsAndImageryOverlay("World Map Kit Aerial");
-            worldMapKitAerialOverlay.Projection = WorldStreetsAndImageryProjection.SphericalMercator;
-            worldMapKitAerialOverlay.MapType = WorldStreetsAndImageryMapType.Aerial;
-            Map1.CustomOverlays.Add(worldMapKitAerialOverlay);
+            ThinkGeoCloudMapsOverlay ThinkGeoCloudMapsAerial = new ThinkGeoCloudMapsOverlay()
+            {
+                Name = "ThinkGeo Cloud Maps Aerial",
+                MapType = ThinkGeoCloudMapsMapType.Aerial
+            };
+            Map1.CustomOverlays.Add(ThinkGeoCloudMapsAerial);
 
-            WorldStreetsAndImageryOverlay worldMapKitAerialWithLabelsOverlay = new WorldStreetsAndImageryOverlay("World Map Kit Aerial With Labels");
-            worldMapKitAerialWithLabelsOverlay.Projection = WorldStreetsAndImageryProjection.SphericalMercator;
-            worldMapKitAerialWithLabelsOverlay.MapType = WorldStreetsAndImageryMapType.AerialWithLabels;
-            Map1.CustomOverlays.Add(worldMapKitAerialWithLabelsOverlay);
+            ThinkGeoCloudMapsOverlay ThinkGeoCloudMapsHybrid = new ThinkGeoCloudMapsOverlay()
+            {
+                Name = "ThinkGeo Cloud Maps Hybrid",
+                MapType = ThinkGeoCloudMapsMapType.Hybrid
+            };
+            Map1.CustomOverlays.Add(ThinkGeoCloudMapsHybrid);
 
-            OpenStreetMapOverlay openStreetMapOverlay = new OpenStreetMapOverlay("Open Street Map");
+            OpenStreetMapOverlay openStreetMapOverlay = new OpenStreetMapOverlay("Open Street Map1");
             Map1.CustomOverlays.Add(openStreetMapOverlay);
 
             // Add spatial fences
@@ -338,7 +345,7 @@ namespace MapSuiteVehicleTracking.Controllers
                 PointMarkerStyle currentPositionStyle = new PointMarkerStyle(currentPositionImage);
                 MarkerValueItem currentPositionItem = new MarkerValueItem(vehicle.Id.ToString(), (MarkerStyle)currentPositionStyle);
                 valueStyle.ValueItems.Add(currentPositionItem);
-                }
+            }
 
             InMemoryMarkerOverlay vehiclesMarkerOverlay = new InMemoryMarkerOverlay("VehicleOverlay", new FeatureSourceColumn[] { new FeatureSourceColumn("VehicleId") });
             vehiclesMarkerOverlay.IsVisibleInOverlaySwitcher = false;
@@ -349,7 +356,7 @@ namespace MapSuiteVehicleTracking.Controllers
         }
 
         private void AddVehicleHistoryMarkerOverlay(Map Map1)
-                {
+        {
             InMemoryMarkerOverlay vehicleHistoryOverlay = new InMemoryMarkerOverlay("VehicleHistoryOverlay", new FeatureSourceColumn[]{
                 new FeatureSourceColumn("IsCurrentPosition"),
                 new FeatureSourceColumn("Speed"),
@@ -378,14 +385,14 @@ namespace MapSuiteVehicleTracking.Controllers
             vehicleHistoryOverlay.ZoomLevelSet.ZoomLevel01.DefaultMarkerStyle.Popup.ContentHtml = popupHtml.ToString();
             vehicleHistoryOverlay.ZoomLevelSet.ZoomLevel01.DefaultMarkerStyle.Popup.AutoSize = true;
             vehicleHistoryOverlay.ZoomLevelSet.ZoomLevel01.ApplyUntilZoomLevel = ApplyUntilZoomLevel.Level20;
-                }
+        }
 
         private void UpdateVehiclesToOverlays(Map Map1, Dictionary<int, Vehicle> vehicles)
         {
             InMemoryMarkerOverlay vehiclesMarkerOverlay = Map1.CustomOverlays["VehicleOverlay"] as InMemoryMarkerOverlay;
             InMemoryMarkerOverlay vehiclesHistoryOverlay = Map1.CustomOverlays["VehicleHistoryOverlay"] as InMemoryMarkerOverlay;
 
-                // Clear old vehicle's old positions
+            // Clear old vehicle's old positions
             vehiclesMarkerOverlay.FeatureSource.InternalFeatures.Clear();
             vehiclesHistoryOverlay.FeatureSource.InternalFeatures.Clear();
 
