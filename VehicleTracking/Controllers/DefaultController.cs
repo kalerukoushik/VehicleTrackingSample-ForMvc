@@ -285,7 +285,7 @@ namespace MapSuiteVehicleTracking.Controllers
             };
             Map1.CustomOverlays.Add(ThinkGeoCloudMapsHybrid);
 
-            OpenStreetMapOverlay openStreetMapOverlay = new OpenStreetMapOverlay("Open Street Map1");
+            OpenStreetMapOverlay openStreetMapOverlay = new OpenStreetMapOverlay("Open Street Map");
             Map1.CustomOverlays.Add(openStreetMapOverlay);
 
             // Add spatial fences
