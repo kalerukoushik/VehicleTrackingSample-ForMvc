@@ -95,13 +95,11 @@ namespace MapSuiteVehicleTracking.Controllers
                     }
 
                     // Insert new feature into the database
-                    using (TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["AccessDataBase"]))
+                    TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["AccessDataBase"]);
+                    // Insert new added and modified features to database
+                    foreach (Feature feature in newAddedFeatures)
                     {
-                        // Insert new added and modified features to database
-                        foreach (Feature feature in newAddedFeatures)
-                        {
-                            vehicleProvider.InsertSpatialFence(feature);
-                        }
+                        vehicleProvider.InsertSpatialFence(feature);
                     }
                 }
                 else // Deal with modify mode is activated scenario
@@ -142,22 +140,20 @@ namespace MapSuiteVehicleTracking.Controllers
                     spatialFenceOverlay.Redraw();
 
                     // Update the database
-                    using (TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["AccessDataBase"]))
+                    TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(AppDomain.CurrentDomain.BaseDirectory + ConfigurationManager.AppSettings["AccessDataBase"]);
+                    // Delete all spatial fences from database and then update the existing ones
+                    if (removedFeatures.Count > 0)
                     {
-                        // Delete all spatial fences from database and then update the existing ones
-                        if (removedFeatures.Count > 0)
-                        {
-                            vehicleProvider.DeleteSpatialFences(removedFeatures);
-                        }
-                        // Insert new added and modified features to database
-                        foreach (Feature feature in newAddedFeatures)
-                        {
-                            vehicleProvider.InsertSpatialFence(feature);
-                        }
-                        foreach (Feature feature in modifiedFeatures)
-                        {
-                            vehicleProvider.UpdateSpatialFenceByFeature(feature);
-                        }
+                        vehicleProvider.DeleteSpatialFences(removedFeatures);
+                    }
+                    // Insert new added and modified features to database
+                    foreach (Feature feature in newAddedFeatures)
+                    {
+                        vehicleProvider.InsertSpatialFence(feature);
+                    }
+                    foreach (Feature feature in modifiedFeatures)
+                    {
+                        vehicleProvider.UpdateSpatialFenceByFeature(feature);
                     }
                 }
                 return true;
@@ -226,10 +222,8 @@ namespace MapSuiteVehicleTracking.Controllers
             // using (TrackingSqlProvider vehicleProvider = new TrackingSqlProvider(ConfigurationManager.ConnectionStrings["VehicleTrackingDbConnectionString"].ConnectionString))
             //
             // Get all the vehicles from the database
-            using (TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(Server.MapPath(ConfigurationManager.AppSettings["AccessDataBase"])))
-            {
-                vehicles = vehicleProvider.GetCurrentVehicles(currentTime);
-            }
+            TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(Server.MapPath(ConfigurationManager.AppSettings["AccessDataBase"]));
+            vehicles = vehicleProvider.GetCurrentVehicles(currentTime);
 
             foreach (var vehicle in vehicles)
             {
@@ -243,10 +237,8 @@ namespace MapSuiteVehicleTracking.Controllers
         {
             // Get the spatial fences from the database            
             Collection<Feature> spatialFences = new Collection<Feature>();
-            using (TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(Server.MapPath(ConfigurationManager.AppSettings["AccessDataBase"])))
-            {
-                spatialFences = vehicleProvider.GetSpatialFences();
-            }
+            TrackingAccessProvider vehicleProvider = new TrackingAccessProvider(Server.MapPath(ConfigurationManager.AppSettings["AccessDataBase"]));
+            spatialFences = vehicleProvider.GetSpatialFences();
 
             return spatialFences;
         }
@@ -398,31 +390,26 @@ namespace MapSuiteVehicleTracking.Controllers
 
             foreach (var currentVehicle in vehicles)
             {
-                foreach (var item in vehicles)
-                {
-                    Vehicle vehicle = item.Value;
-                    Feature vehicleFeature = new Feature(new PointShape(vehicle.Location.Longitude, vehicle.Location.Latitude));
-                    vehicleFeature.ColumnValues.Add("VehicleId", vehicle.Id.ToString());
+                Vehicle vehicle = currentVehicle.Value;
+                Feature vehicleFeature = new Feature(vehicle.Location.GetLocationPointShape().GetWellKnownBinary());
+                vehicleFeature.ColumnValues.Add("VehicleId", vehicle.Id.ToString());
 
-                    vehiclesMarkerOverlay.FeatureSource.Open();
-                    vehiclesMarkerOverlay.FeatureSource.BeginTransaction();
-                    vehiclesMarkerOverlay.FeatureSource.AddFeature(vehicleFeature);
-                    vehiclesMarkerOverlay.FeatureSource.CommitTransaction();
-                }
+                vehiclesMarkerOverlay.FeatureSource.Open();
+                vehiclesMarkerOverlay.FeatureSource.InternalFeatures.Add(vehicleFeature);
 
                 // Add the vheicle's location histories                    
                 foreach (Location historyLocation in currentVehicle.Value.HistoryLocations.Take(5))
                 {
-                    Feature breadcrumbFeature = new Feature(historyLocation.GetLocationPointShape().GetWellKnownBinary(), currentVehicle.Value.VehicleName + historyLocation.DateTime.ToString());
-                    breadcrumbFeature.ColumnValues["DateTime"] = historyLocation.DateTime.ToString();
-                    breadcrumbFeature.ColumnValues["IsCurrentPosition"] = "IsNotCurrentPosition";
-                    breadcrumbFeature.ColumnValues["Speed"] = historyLocation.Speed.ToString(CultureInfo.InvariantCulture);
+                    Feature breadcrumbFeature = new Feature(vehicle.Location.GetLocationPointShape().GetWellKnownBinary());
+                    breadcrumbFeature.ColumnValues.Add("DateTime", historyLocation.DateTime.ToString());
+                    breadcrumbFeature.ColumnValues.Add("IsCurrentPosition", "IsNotCurrentPosition");
+                    breadcrumbFeature.ColumnValues.Add("Speed", historyLocation.Speed.ToString(CultureInfo.InvariantCulture));
 
                     Location projectedLocation = ProjectLocation(historyLocation);
-                    breadcrumbFeature.ColumnValues["Longitude"] = projectedLocation.Longitude.ToString("N6", CultureInfo.InvariantCulture);
-                    breadcrumbFeature.ColumnValues["Latitude"] = projectedLocation.Latitude.ToString("N6", CultureInfo.InvariantCulture);
-                    breadcrumbFeature.ColumnValues["VehicleName"] = currentVehicle.Value.VehicleName;
-                    breadcrumbFeature.ColumnValues["Duration"] = currentVehicle.Value.SpeedDuration.ToString(CultureInfo.InvariantCulture);
+                    breadcrumbFeature.ColumnValues.Add("Longitude", projectedLocation.Longitude.ToString("N6", CultureInfo.InvariantCulture));
+                    breadcrumbFeature.ColumnValues.Add("Latitude", projectedLocation.Latitude.ToString("N6", CultureInfo.InvariantCulture));
+                    breadcrumbFeature.ColumnValues.Add("VehicleName", currentVehicle.Value.VehicleName);
+                    breadcrumbFeature.ColumnValues.Add("Duration", currentVehicle.Value.SpeedDuration.ToString(CultureInfo.InvariantCulture));
                     vehiclesHistoryOverlay.FeatureSource.InternalFeatures.Add(breadcrumbFeature);
                 }
 
@@ -454,7 +441,7 @@ namespace MapSuiteVehicleTracking.Controllers
             Location projectedLocation = new Location();
             projectedLocation.Longitude = Math.Round(projectedPoint.X, 6);
             projectedLocation.Latitude = Math.Round(projectedPoint.Y, 6);
-            return location;
+            return projectedLocation;
         }
     }
 }
