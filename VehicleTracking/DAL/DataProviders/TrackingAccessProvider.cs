@@ -50,10 +50,9 @@ namespace ThinkGeo.MapSuite.VehicleTracking
                 int id = Convert.ToInt32(vehicleRecord[1], CultureInfo.InvariantCulture);
                 if (id == vehicleId)
                 {
-                    currentVechicle.VehicleIconVirtualPath = "Images/" + vehicleRecord[2].Trim('\"');
-                    string vehicleName = vehicleRecord[0];
-                    currentVechicle.VehicleName = vehicleName;
-
+                    currentVechicle.Id = vehicleId;
+                    currentVechicle.VehicleName = vehicleRecord[0];
+                    currentVechicle.VehicleIconVirtualPath = "Images/" + vehicleRecord[2];
                     break;
                 }
             }
@@ -61,28 +60,28 @@ namespace ThinkGeo.MapSuite.VehicleTracking
             // Get the locations from current time back to the passed time span
             Collection<double> historySpeeds = new Collection<double>();
             var locationFilePath = Path.Combine(dataRootPath, "Location.txt");
-            var records = ParseCsv(locationFilePath).Where(r => r[1] == vehicleId.ToString()).OrderByDescending(r => r[4]).ToList();
+            var records = ParseCsv(locationFilePath).Where(r =>
+            {
+                DateTime dateTime = Convert.ToDateTime(r[4], CultureInfo.InvariantCulture);
+                return (r[1] == vehicleId.ToString()) && dateTime <= currentTime && dateTime >= trackStartTime;
+            }).OrderByDescending(r => r[4]).ToList();
             for (int rowIndex = 0; rowIndex < records.Count; rowIndex++)
             {
                 var columns = records[rowIndex];
+                double latitude = Convert.ToDouble(columns[3], CultureInfo.InvariantCulture);
+                double longitude = Convert.ToDouble(columns[2], CultureInfo.InvariantCulture);
+                double speed = Convert.ToDouble(columns[5], CultureInfo.InvariantCulture);
                 DateTime dateTime = Convert.ToDateTime(columns[4], CultureInfo.InvariantCulture);
-                if (dateTime <= currentTime && dateTime >= trackStartTime)
-                {
-                    double latitude = Convert.ToDouble(columns[3], CultureInfo.InvariantCulture);
-                    double longitude = Convert.ToDouble(columns[2], CultureInfo.InvariantCulture);
-                    double speed = Convert.ToDouble(columns[5], CultureInfo.InvariantCulture);
-                    Location currentLocation = new Location(longitude, latitude, speed, dateTime);
-                    historySpeeds.Add(speed);
+                Location currentLocation = new Location(longitude, latitude, speed, dateTime);
+                historySpeeds.Add(speed);
 
-                    if (currentVechicle.Location == null)
-                    {
-                        currentVechicle.Location = currentLocation;
-                        currentVechicle.Id = vehicleId;
-                    }
-                    else
-                    {
-                        currentVechicle.HistoryLocations.Add(currentLocation);
-                    }
+                if (rowIndex == 0)
+                {
+                    currentVechicle.Location = currentLocation;
+                }
+                else
+                {
+                    currentVechicle.HistoryLocations.Add(currentLocation);
                 }
             }
 
@@ -96,7 +95,7 @@ namespace ThinkGeo.MapSuite.VehicleTracking
             var records = ParseCsv(path);
             foreach (var record in records)
             {
-                string wkt = record[1].Trim('\"');
+                string wkt = record[1];
                 string id = record[2];
                 spatialFences.Add(new Feature(wkt, id));
             }
@@ -194,7 +193,7 @@ namespace ThinkGeo.MapSuite.VehicleTracking
                             else if (bufffer[i] == ',' && !IsInQuote)
                             {
                                 string strColumn = new String(dataSubStr.ToArray<char>());
-                                dataLine.Add(strColumn.Trim());
+                                dataLine.Add(strColumn.Trim().Trim('\"'));
                                 dataSubStr = new List<char>();
                             }
                             else if (bufffer[i] == '\n' && !IsNewLine)
@@ -208,7 +207,7 @@ namespace ThinkGeo.MapSuite.VehicleTracking
                             }
                             else if (bufffer[i] == '\n' && IsNewLine)
                             {
-                                dataLine.Add(new String(dataSubStr.ToArray<char>()));
+                                dataLine.Add(new String(dataSubStr.ToArray<char>()).Trim('\"'));
                                 IsNewLine = false;
                                 LinesInfo.Add(dataLine);
                                 dataSubStr = new List<char>();

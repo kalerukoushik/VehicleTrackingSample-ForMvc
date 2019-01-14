@@ -23,7 +23,7 @@ namespace ThinkGeo.MapSuite.VehicleTracking
         {
             this.Id = id;
             this.VehicleName = string.Empty;
-            this.Location = null;
+            this.Location = new Location();
             this.historyLocations = new Collection<Location>();
         }
 

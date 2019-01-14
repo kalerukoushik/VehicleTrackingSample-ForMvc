@@ -400,7 +400,7 @@ namespace MapSuiteVehicleTracking.Controllers
                 // Add the vheicle's location histories                    
                 foreach (Location historyLocation in currentVehicle.Value.HistoryLocations.Take(5))
                 {
-                    Feature breadcrumbFeature = new Feature(vehicle.Location.GetLocationPointShape().GetWellKnownBinary());
+                    Feature breadcrumbFeature = new Feature(historyLocation.GetLocationPointShape().GetWellKnownBinary());
                     breadcrumbFeature.ColumnValues.Add("DateTime", historyLocation.DateTime.ToString());
                     breadcrumbFeature.ColumnValues.Add("IsCurrentPosition", "IsNotCurrentPosition");
                     breadcrumbFeature.ColumnValues.Add("Speed", historyLocation.Speed.ToString(CultureInfo.InvariantCulture));
