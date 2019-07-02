@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*===========================================
+    Backgrounds for this sample are powered by ThinkGeo Cloud Maps and require
+    An API Key. These were sent to you via email when you signed up
+    with ThinkGeo, or you can register now at https://cloud.thinkgeo.com.
+===========================================*/
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
@@ -247,7 +253,7 @@ namespace MapSuiteVehicleTracking.Controllers
         {
             Map Map1 = new Map("Map1");
             Map1.MapUnit = GeographyUnit.Meter;
-            Map1.ZoomLevelSet = ThinkGeoCloudMapsOverlay.GetZoomLevelSet();
+            Map1.ZoomLevelSet = new ThinkGeoCloudMapsZoomLevelSet();
             Map1.Width = new System.Web.UI.WebControls.Unit(100, System.Web.UI.WebControls.UnitType.Percentage);
             Map1.Height = new System.Web.UI.WebControls.Unit(100, System.Web.UI.WebControls.UnitType.Percentage);
             Map1.CurrentExtent = new RectangleShape(-10785241.6495495, 3916508.33762434, -10778744.5183967, 3912187.74540771);
@@ -255,25 +261,25 @@ namespace MapSuiteVehicleTracking.Controllers
             Map1.MapTools.OverlaySwitcher.Enabled = true;
             Map1.EditOverlay.EditSettings.IsResizable = false;
 
-            // base map layer
-            ThinkGeoCloudMapsOverlay ThinkGeoCloudMapsLight = new ThinkGeoCloudMapsOverlay
+            // Please input your ThinkGeo Cloud API Key to enable the background map.
+            ThinkGeoCloudRasterMapsOverlay ThinkGeoCloudMapsLight = new ThinkGeoCloudRasterMapsOverlay("ThinkGeo Cloud API Key")
             {
                 Name = "ThinkGeo Cloud Maps Light",
-                MapType = ThinkGeoCloudMapsMapType.Light
+                MapType = ThinkGeoCloudRasterMapsMapType.Light
             };
             Map1.CustomOverlays.Add(ThinkGeoCloudMapsLight);
 
-            ThinkGeoCloudMapsOverlay ThinkGeoCloudMapsAerial = new ThinkGeoCloudMapsOverlay()
+            ThinkGeoCloudRasterMapsOverlay ThinkGeoCloudMapsAerial = new ThinkGeoCloudRasterMapsOverlay("ThinkGeo Cloud API Key")
             {
                 Name = "ThinkGeo Cloud Maps Aerial",
-                MapType = ThinkGeoCloudMapsMapType.Aerial
+                MapType = ThinkGeoCloudRasterMapsMapType.Aerial
             };
             Map1.CustomOverlays.Add(ThinkGeoCloudMapsAerial);
 
-            ThinkGeoCloudMapsOverlay ThinkGeoCloudMapsHybrid = new ThinkGeoCloudMapsOverlay()
+            ThinkGeoCloudRasterMapsOverlay ThinkGeoCloudMapsHybrid = new ThinkGeoCloudRasterMapsOverlay("ThinkGeo Cloud API Key")
             {
                 Name = "ThinkGeo Cloud Maps Hybrid",
-                MapType = ThinkGeoCloudMapsMapType.Hybrid
+                MapType = ThinkGeoCloudRasterMapsMapType.Hybrid
             };
             Map1.CustomOverlays.Add(ThinkGeoCloudMapsHybrid);
 
